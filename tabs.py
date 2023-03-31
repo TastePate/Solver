@@ -40,7 +40,8 @@ class StatisticsTab(ttk.Frame):
         self.axes.bar(['Правильные ответы', 'Неправильные ответы'],
                       [self.statistics.right_answers, self.statistics.wrong_answers],
                       color='b',
-                      width=0.1)
+                      width=0.1,
+                      align='center')
         self.canvas.draw()
         self.after(1000, self.update)
 
@@ -64,6 +65,7 @@ class QuestionTab(ttk.Frame):
 
         self.accept_button = Button(self, font=("Times New Roman", 20),
                                     text='Принять ответ',
+                                    state=DISABLED,
                                     command=self.accept_answer)
 
         self.right_or_not_label = Label(self, font=("Times New Roman", 20))
@@ -82,9 +84,9 @@ class QuestionTab(ttk.Frame):
                 self.statistics.right_answers += 1
             else:
                 self.statistics.wrong_answers += 1
-                self.right_or_not_label.config(
-                    text="Правильно!" if answer == self.question.right_answer
-                                      else "Неверно!")
+            self.right_or_not_label.config(
+                text="Правильно!" if answer == self.question.right_answer
+                                  else "Неверно!")
 
             self.after(500, self.next_question)
         except ValueError:
@@ -96,7 +98,6 @@ class QuestionTab(ttk.Frame):
     def next_question(self):
         self.right_or_not_label.config(text="")
         self.answer_entry.config(state=NORMAL)
-        self.accept_button.config(state=NORMAL)
         self.answer_entry.delete(0, END)
         self.question = Question(1, 100)
         self.question_label.config(text=self.question.__str__())
