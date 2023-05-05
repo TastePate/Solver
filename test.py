@@ -1,43 +1,25 @@
-import tkinter as tk
-import matplotlib
+import tkinter
+import tkinter.scrolledtext as st
 
-matplotlib.use('TkAgg')
-
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-
-class App(tk.Tk):
+class App(tkinter.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title('Matplotlib Demo')
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
+        self.bind('<Escape>', lambda e: self.destroy())
 
-        data = {
-            'Python': 10,
-            'C': 11,
-            'Java': 15,
-            'C++': 7,
-            'C#': 9
-        }
+        menubar = tkinter.Menu(self)
+        filemenu = tkinter.Menu(menubar, tearoff=0)
+        filemenu.add_command(label="Exit", command=self.destroy)
+        menubar.add_cascade(label="File", menu=filemenu)
+        self.config(menu=menubar)
 
-        languages = data.keys()
-        popularity = data.values()
-
-        figure = Figure(figsize=(6, 4), dpi=100)
-        figure_canvas = FigureCanvasTkAgg(figure, self)
-        NavigationToolbar2Tk(figure_canvas, self)
-        axes = figure.add_subplot()
-
-        axes.bar(languages, popularity)
-        axes.set_title('Top 5 languages')
-        axes.set_ylabel('Popularity')
-
-        figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        txt = st.ScrolledText(self, undo=True)
+        txt['font'] = ('Times New Roman', '14')
+        txt.pack(expand=True, fill='both')
 
 
 if __name__ == '__main__':
     app = App()
     app.mainloop()
-
-
 
