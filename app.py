@@ -1,5 +1,7 @@
 from tkinter import ttk
 from tkinter import *
+
+from db_worker import Database
 from statistics import Statistics
 from tabs import StatisticsTab, QuestionTab
 
@@ -9,7 +11,10 @@ class App(Tk):
     def __init__(self):
         super().__init__()
 
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
         self.tab_control = ttk.Notebook(self)
+
+        self.db = Database('users.db')
 
         self.statistics = Statistics()
 
@@ -23,3 +28,5 @@ class App(Tk):
 
         self.question_tab.next_question()
 
+    def destroy(self):
+        pass
