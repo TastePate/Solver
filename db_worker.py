@@ -1,6 +1,9 @@
 import sqlite3
 from sqlite3 import Error
 
+from statistics import Statistics
+
+
 class Database:
     def __init__(self, name):
         self.__name = name
@@ -11,13 +14,30 @@ class Database:
         try:
             connection = sqlite3.connect(self.__name)
             print('Успешно подключено!')
-        except Error as e:
-            print(f'Произошла ошибка подключения: \'{e}\'')
+        except Error:
+            raise Error('Неккоректное имя базы данных')
         return connection
 
     def insert_data(self, user):
         cursor = self.__connection.cursor()
         cursor.execute('''
-            INSERT INTO users(user_name, password, wrong_answers, right_answers) VALUES(?, ?, ?, ?)
+            INSERT INTO users(user_name, password) VALUES(?, ?)
         ''', user)
         self.__connection.commit()
+
+    def get_value(self, user_name):
+        cursor = self.__connection.cursor()
+        cursor.execute('''
+            Select "user_name", "password" from users where "user_name" = ?
+        ''', (user_name, ))
+        result = cursor.fetchone()
+        return result
+
+    def update_value(self, user_name, statistics: Statistics):
+        cursor = self.__connection.cursor()
+        cursor.execute('''
+            UPDATE users SET wrong_answers=?, right_answers=? WHERE user_name=?
+        ''', (statistics.wrong_answers, statistics.right_answers, user_name))
+        self.__connection.commit()
+
+
