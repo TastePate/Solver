@@ -1,5 +1,5 @@
 class Statistics:
 
-    def __init__(self):
-        self.right_answers = 0
-        self.wrong_answers = 0
+    def __init__(self, wrong_answers, right_answers):
+        self.right_answers = right_answers
+        self.wrong_answers = wrong_answers
