@@ -2,6 +2,7 @@ import tkinter
 from tkinter import *
 from tkinter import ttk
 
+from db_worker import Database
 from question import Question
 from statistics import Statistics
 
@@ -51,7 +52,6 @@ class QuestionTab(ttk.Frame):
     def __init__(self, master: ttk.Notebook, statistics: Statistics):
         super().__init__(master)
 
-        self.first_time_running = True
         self.statistics = statistics
         self.question_label = Label(self, font=("Times New Roman", 30))
         self.question = None
@@ -86,7 +86,7 @@ class QuestionTab(ttk.Frame):
                 self.statistics.wrong_answers += 1
             self.right_or_not_label.config(
                 text="Правильно!" if answer == self.question.right_answer
-                                  else "Неверно!")
+                                  else f"Неверно! Правильный ответ: {self.question.right_answer}")
 
             self.after(500, self.next_question)
         except ValueError:
@@ -106,5 +106,34 @@ class QuestionTab(ttk.Frame):
         self.answer_entry.pack()
         self.accept_button.pack()
         self.right_or_not_label.pack()
+
+
+class LeadersBoard(ttk.Frame):
+    def __init__(self, master: ttk.Notebook):
+        super().__init__(master)
+
+        self.db = Database('users.db')
+        players = self.db.get_all_values()
+        players = sorted(players, key=lambda x: (x[3], x[3] / (x[2] + x[3] + 1)), reverse=True)
+
+        table = ttk.Treeview(self)
+        table['columns'] = (0, 1, 2, 3)
+
+        table.column('#0', width=0, stretch=NO)
+        table.column(0, anchor=CENTER)
+        table.column(1, anchor=CENTER)
+        table.column(2, anchor=CENTER)
+        table.column(3, anchor=CENTER)
+
+        table.heading('#0', text='', anchor=CENTER)
+        table.heading(0, text='id')
+        table.heading(1, text='user_name')
+        table.heading(2, text='wrong_answers')
+        table.heading(3, text='right_answers')
+
+        for player in players:
+            table.insert(parent='', index='end', text='', values=player)
+
+        table.pack()
 
 
