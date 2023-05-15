@@ -13,7 +13,6 @@ class Database:
         connection = None
         try:
             connection = sqlite3.connect(self.__name)
-            print('Успешно подключено!')
         except Error:
             raise Error('Неккоректное имя базы данных')
         return connection
@@ -28,7 +27,7 @@ class Database:
     def get_value(self, user_name):
         cursor = self.__connection.cursor()
         cursor.execute('''
-            Select "user_name", "password" from users where "user_name" = ?
+            Select * from users where "user_name" = ?
         ''', (user_name, ))
         result = cursor.fetchone()
         return result
@@ -39,5 +38,12 @@ class Database:
             UPDATE users SET wrong_answers=?, right_answers=? WHERE user_name=?
         ''', (statistics.wrong_answers, statistics.right_answers, user_name))
         self.__connection.commit()
+
+    def get_all_values(self):
+        cursor = self.__connection.cursor()
+        cursor.execute('''
+            Select "id", "user_name", "wrong_answers", "right_answers"  from users
+        ''')
+        return cursor.fetchall()
 
 
