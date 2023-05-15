@@ -36,8 +36,9 @@ class EnterWindow(Tk):
         user = self.db.get_value(user_name)
         if user is None:
             showerror('Ошибка', 'Неверный логин или пароль!')
-        elif user[0] == user_name and user[1] == password:
-            self.open_main_app()
+        elif user[1] == user_name and user[2] == password:
+            self.open_main_app(user_name)
+
 
     def open_registration_window(self):
         self.destroy()
@@ -45,9 +46,9 @@ class EnterWindow(Tk):
         registration_window.mainloop()
         registration_window.protocol("WM_DELETE_WINDOW", lambda: self.destroy())
 
-    def open_main_app(self):
+    def open_main_app(self, user: str):
         self.destroy()
-        main_app = App()
+        main_app = App(user)
         main_app.mainloop()
         main_app.protocol("WM_DELETE_WINDOW", lambda: self.destroy())
 
@@ -78,11 +79,12 @@ class RegistrationWindow(Tk):
         user = self.db.get_value(user_name)
         if user is None:
             self.db.insert_data((user_name, password))
+            self.open_main_app(user_name)
         else:
             showinfo('Предпреждение', 'Пользователь с таким именем уже существует!')
 
-    def open_main_app(self):
+    def open_main_app(self, user: str):
         self.destroy()
-        main_app = App()
+        main_app = App(user)
         main_app.mainloop()
         main_app.protocol("WM_DELETE_WINDOW", lambda: self.destroy())
