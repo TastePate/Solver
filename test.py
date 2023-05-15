@@ -1,25 +1,35 @@
-import tkinter
-import tkinter.scrolledtext as st
+from tkinter import Tk, ttk, CENTER, NO
 
-class App(tkinter.Tk):
-    def __init__(self):
-        super().__init__()
+from db_worker import Database
 
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
-        self.bind('<Escape>', lambda e: self.destroy())
+# def get_player_to_sort(player):
+#     return player[3] if player[2] + player[3] == 0 else (player[3], player[3] / (player[2] + player[3]))
 
-        menubar = tkinter.Menu(self)
-        filemenu = tkinter.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Exit", command=self.destroy)
-        menubar.add_cascade(label="File", menu=filemenu)
-        self.config(menu=menubar)
+db = Database('users.db')
+players = db.get_all_values()[:10]
+players = sorted(players, key=lambda x: (x[3], x[3] / (x[2] + x[3] + 1)), reverse=True)
 
-        txt = st.ScrolledText(self, undo=True)
-        txt['font'] = ('Times New Roman', '14')
-        txt.pack(expand=True, fill='both')
+root = Tk()
+root.geometry('500x500')
 
+table = ttk.Treeview()
+table['columns'] = (0, 1, 2, 3)
 
-if __name__ == '__main__':
-    app = App()
-    app.mainloop()
+table.column('#0', width=0, stretch=NO)
+table.column(0, anchor=CENTER)
+table.column(1, anchor=CENTER)
+table.column(2, anchor=CENTER)
+table.column(3, anchor=CENTER)
 
+table.heading('#0', text='', anchor=CENTER)
+table.heading(0, text='id')
+table.heading(1, text='user_name')
+table.heading(2, text='wrong_answers')
+table.heading(3, text='right_answers')
+
+for player in players:
+    table.insert(parent='', index='end', text='', values=player)
+
+table.pack()
+
+root.mainloop()
